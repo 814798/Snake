@@ -51,7 +51,13 @@
                 Margin="{Binding Path=Margin, ElementName=GridBorder}"
                 RenderOptions.EdgeMode="Aliased">
                 <TextBlock x:Name="OverlayText"
-                   Text="Press Any Key to Start"
+                   Text="Press Any Key to Start
+                           Space-Toggle Sprint
+                           PgeUp/PageDown-Difficulty
+                           SuperEasy: Unable to die
+                           Easy: Tons of food
+                           Normal: Only 1 food
+                           Hard: Poison is added"
                    FontSize="26"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Top"

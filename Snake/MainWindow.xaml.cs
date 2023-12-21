@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Snake
 {
@@ -25,7 +26,8 @@ namespace Snake
             {
                 {GridValue.Empty, Images.Empty },
                 {GridValue.Snake, Images.Body },
-                {GridValue.Food, Images.Food }
+                {GridValue.Food, Images.Food },
+                {GridValue.Poison, Images.Poison },
             };
 
         private readonly Dictionary<Direction, int> dirtoRotation = new()
@@ -36,12 +38,13 @@ namespace Snake
             {Direction.Left, 270 }
         };
 
-        private readonly int rows = 15;
-        private readonly int cols = 15;
+        private int rows = 14;
+        private int cols = 14;
+        private int speed = 100;
         private readonly Image[,] gridImages;
         private GameState gameState;
         private bool gameRunning;
-
+        private Random random = new Random();
 
         public MainWindow()
         {
@@ -54,7 +57,7 @@ namespace Snake
         {
             while (!gameState.GameOver)
             {
-                await Task.Delay(100);
+                await Task.Delay(speed);
                 gameState.Move();
                 Draw();
             }
@@ -94,20 +97,71 @@ namespace Snake
         }
 
         private async void Window_PreviewKeyDown(object sender, KeyEventArgs e) { 
-            if(Overlay.Visibility == Visibility.Visible)
+            if(e.Key != Key.PageDown && e.Key != Key.PageUp)
             {
-                e.Handled = true;
-            }
-            if (!gameRunning)
-            {
-                gameRunning = true;
-                await RunGame();
-                gameRunning = false;
+                if (Overlay.Visibility == Visibility.Visible)
+                {
+                    e.Handled = true;
+                }
+                if (!gameRunning)
+                {
+                    gameRunning = true;
+                    await RunGame();
+                    gameRunning = false;
+                }
             }
         }
 
+
+
+
+        public static int difficulty = 1;
+        private void writeDifficulty()
+        {
+            switch (difficulty)
+            {
+                case -1:
+                    ScoreText.Text = "Difficulty: Too Easy";
+                    break;
+                case 0:
+                    ScoreText.Text = "Difficulty: Easy";
+                    break;
+                case 1:
+                    ScoreText.Text = "Difficulty: Normal";
+                    break;
+                case 2:
+                    ScoreText.Text = "Difficulty: Hard";
+                    break;
+                case 3:
+                    ScoreText.Text = "Difficulty: Impossible";
+                    break;
+
+            }
+        }
         private void Windows_KeyDown(object sender, KeyEventArgs e)
         {
+            switch (e.Key)
+            {
+                case Key.PageUp:
+                    if (difficulty <= 3)
+                    {
+                        difficulty++;
+                        writeDifficulty();
+                        break;
+                    }
+                    break;
+
+                case Key.PageDown:
+                    if (difficulty >= -1)
+                    {
+                        difficulty--;
+                        writeDifficulty();
+                        break;
+                    }
+                    break;
+
+            }
+
             if (gameState.GameOver)
             {
                 return;
@@ -116,13 +170,37 @@ namespace Snake
             switch(e.Key)
             {
                 case Key.Left:
+                case Key.A:
                     gameState.ChangeDirection(Direction.Left); break;
                 case Key.Right:
+                case Key.D:
                     gameState.ChangeDirection(Direction.Right); break;
                 case Key.Up:
+                case Key.W:
                     gameState.ChangeDirection(Direction.Up); break;
                 case Key.Down:
+                case Key.S:
                     gameState.ChangeDirection(Direction.Down); break;
+                case Key.E:
+                case Key.B:
+                case Key.D1:
+                case Key.Space:
+                    if(speed > 70)
+                    {
+                        speed = 70; break;
+                    } else
+                    {
+                        speed = 100; break;
+                    }
+                //case Key.PageUp:
+                    //rows++;
+                    //cols++;
+                    //break;
+               // case Key.PageDown:  // Wanted to add a way to increase/decrease the size of grid, but doesn't seem to work very well.
+                   // rows--;
+                  //  cols--;
+                  //  DrawGrid();
+                 //   break;
             }
         }
 
@@ -155,6 +233,7 @@ namespace Snake
 
         private async Task ShowGameOver()
         {
+            Audio.GameOver.Play();
             await DrawDeadSnake();
             await Task.Delay(1000);
             Overlay.Visibility = Visibility.Visible;
@@ -183,5 +262,23 @@ namespace Snake
 
             }
         }
+
+        private async Task ShakeWindow(int durationMS)
+        {
+            var oLeft = this.Left;
+            var oTop = this.Top;
+
+            var shakeTimer = new DispatcherTimer();
+            shakeTimer.Tick += (sender, args) =>
+            {
+                this.Left = oLeft + random.Next(-10, 11);
+                this.Top = oTop + random.Next(-10, 11);
+            };
+            shakeTimer.Interval = TimeSpan.FromMilliseconds(200);
+            shakeTimer.Start();
+
+            await Task.Delay(durationMS);
+        }
+
     }
 }

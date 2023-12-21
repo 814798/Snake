@@ -61,9 +61,43 @@ namespace Snake
             List<Position> empty = new List<Position>(EmptyPositions());
 
             if (empty.Count == 0) return;
+            if(MainWindow.difficulty >= 1)
+            {
+                    Position pos = empty[random.Next(empty.Count)];
+                    Grid[pos.Row, pos.Col] = GridValue.Food;
+            } else if(MainWindow.difficulty <= 0)
+            {
+                int foodNum = 1;
+                if(Score >= 1)
+                {
+                    foodNum = Score;
+                }
+                for (int i = 0; i < foodNum; i++)
+                {
+                    Position pos = empty[random.Next(empty.Count)];
+                    Grid[pos.Row, pos.Col] = GridValue.Food;
+                }
+            }
 
-            Position pos = empty[random.Next(empty.Count)];
-            Grid[pos.Row, pos.Col] = GridValue.Food;
+            if (MainWindow.difficulty >= 2)
+            {
+                if(MainWindow.difficulty >= 3)
+                {
+                    for (int i = 0; i < Score; i++)
+                    {
+                        Position pos2 = empty[random.Next(empty.Count)];
+                        Grid[pos2.Row, pos2.Col] = GridValue.Poison;
+                    }
+
+                } else
+                {
+                    Position pos2 = empty[random.Next(empty.Count)];
+                    Grid[pos2.Row, pos2.Col] = GridValue.Poison;
+                }
+
+            }
+
+
         }
         public Position HeadPosition()
         {
@@ -145,9 +179,13 @@ namespace Snake
             }
             Position newHeadPos = HeadPosition().Translate(Dir);
             GridValue hit = WillHit(newHeadPos);
-            if(hit == GridValue.Outside || hit == GridValue.Snake)
+            if(hit == GridValue.Outside || hit == GridValue.Snake || hit == GridValue.Poison)
             {
-                GameOver = true;
+                if(MainWindow.difficulty > 0)
+                {
+                    GameOver = true;
+                }
+
             } else if (hit == GridValue.Empty)
             {
                 RemoveTail();

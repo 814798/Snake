@@ -14,8 +14,16 @@
     <None Remove="Assets\DroidSansMono.ttf" />
     <None Remove="Assets\Empty.png" />
     <None Remove="Assets\Food.png" />
-    <None Remove="Assets\Head.png" />
+    <None Remove="Assets\game-over.mp3" />
     <None Remove="Assets\icon.ico" />
+	  <None Remove="Assets/Head.png" />
+	  <None Remove="Assets\Poison.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\game-over.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,8 +33,9 @@
     <Resource Include="Assets\DroidSansMono.ttf" />
     <Resource Include="Assets\Empty.png" />
     <Resource Include="Assets\Food.png" />
-    <Resource Include="Assets\Head.png" />
     <Resource Include="Assets\icon.ico" />
+	  <Resource Include="Assets/Head.png" />
+	  <Resource Include="Assets\Poison.png" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,7 @@
         Empty,
         Snake,
         Food,
-        Outside
+        Outside,
+        Poison
     }
 }
